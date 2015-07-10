@@ -124,13 +124,21 @@ class OAuth {
      *
      * @return \OAuth\Common\Service\AbstractService
      */
-    public function consumer($service, $url = null, $scope = null)
+    public function consumer($service, $account = '', $token = null, $url = null, $scope = null)
     {
+        // default
+        $account = empty($account) ? $service : $account;
+
         // get config
-        $this->setConfig($service);
+        $this->setConfig($account);
 
         // get storage object
         $storage = $this->createStorageInstance($this->_storage_name);
+
+        // check if token was provided
+        if (!is_null($token)) {
+            $storage = $storage->storeAccessToken($service, $token);
+        }
 
         // create credentials object
         $credentials = new Credentials(
